@@ -5,12 +5,17 @@
 import urllib2, json
 import os
 
+from time import gmtime, strftime
+today = strftime("%Y-%m-%d", gmtime())
+
 nkey = os.getenv('WMNKEY', 'novalidkey' )
 # the command environment will hold the Authentication NKEY
-#startdate = today()
 
+mytags = "&tags=myproduction"
 
-url = "https://api.cloudmonitor.ca.com/1.6/rule_stats?nkey=" + nkey + "&tags=myproduction&start_date=2013-09-22&callback=json"
+startdate = "&start_date=" + today
+
+url = "https://api.cloudmonitor.ca.com/1.6/rule_stats?nkey=" + nkey + mytags + startdate + "&callback=json"
 
 try:
   jsonp = urllib2.urlopen(url).read()
@@ -19,7 +24,6 @@ try:
   data = json.loads(jsondata)
   print json.dumps(jsondata, indent=4, separators=(',',':'))
   print data
-
 except urllib2.URLError, e:
   print 'no valid data received' 
 
@@ -29,10 +33,7 @@ print "\n here are the results"
 totalchecks = data['result']['stats'][0]['checks'] 
 totalerrors = data['result']['stats'][0]['check_errors']
 
-bad = " "
-# f totalerrors > (0.05 * totalchecks)i: bad = " BAD"
-
-print totalerrors + " / " + totalchecks + bad
+print str(totalerrors + " / " + totalchecks)
 
 
 
